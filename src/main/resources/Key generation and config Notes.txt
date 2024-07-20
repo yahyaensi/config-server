@@ -1,0 +1,36 @@
+*) TLS: https://refactorizando.com/en/mutual-tls-communication-in-spring-boot/
+
+  -) Server
+  
+    keytool -genkeypair -alias serveridentity -keyalg RSA -keysize 2048 -validity 3650 -dname "CN=localhost,OU=Unit,O=Organization,L=City,S=State,C=FR" -keypass "adminyahya" -storepass "adminyahya" -storeType JKS -keystore server-identity.jks
+
+	keytool -v -exportcert -file server-identity.cer -alias serveridentity -keystore server-identity.jks -storepass "adminyahya"
+	
+	keytool -v -importcert -file server-identity.cer -alias serveridentity -keystore truststore.jks -storepass "adminyahya"
+	
+	keytool -importkeystore -srckeystore server-identity.jks -srcstoretype JKS -srcstorepass adminyahya -destkeystore server-identity.p12 -deststoretype PKCS12 -deststorepass adminyahya
+	
+	
+	
+	keytool -import -storepass "changeit" -keystore "C:/Program Files/Java/jdk-17/lib/security/cacerts" -alias serveridentity -file "./server-identity.pem"
+	
+	keytool -list -storepass "changeit" -cacerts | grep serveridentity -A1
+		
+	
+	
+  -) Client
+	
+	keytool -genkeypair -alias clientidentity -keyalg RSA -keysize 2048 -validity 3650 -dname "CN=localhost,OU=Unit,O=Organization,L=City,S=State,C=FR" -keypass "adminyahya" -storepass "adminyahya" -storeType JKS -keystore client-identity.jks
+
+	keytool -v -exportcert -file client-identity.cer -alias clientidentity -keystore client-identity.jks -storepass "adminyahya"
+	
+	keytool -v -importcert -file client-identity.cer -alias clientidentity -keystore truststore2.jks -storepass "adminyahya"
+	
+	keytool -importkeystore -srckeystore client-identity.jks -srcstoretype JKS -srcstorepass adminyahya -destkeystore client-identity.p12 -deststoretype PKCS12 -deststorepass adminyahya
+	
+	
+	
+	keytool -import -storepass "changeit" -keystore "C:/Program Files/Java/jdk-17/lib/security/cacerts" -alias serveridentity -file "./server-identity.pem"
+	
+	keytool -list -storepass "changeit" -cacerts | grep serveridentity -A1
+		

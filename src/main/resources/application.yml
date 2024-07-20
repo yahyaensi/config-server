@@ -1,0 +1,95 @@
+# https://stackoverflow.com/questions/32997352/what-is-the-difference-between-putting-a-property-on-application-yml-or-bootstra
+#https://stackoverflow.com/questions/53787325/spring-cloud-git-configuration-placing-repository-in-folder-directly-containi
+
+server:
+  port: 8080
+  
+#  # SSL config
+#  ssl:
+#    # enable/disable https
+#    enabled: true
+#    # keystore location
+#    key-store: classpath:ssl-keystore/ssl-server.jks
+#    # keystore password
+#    key-store-password: adminyahya
+#    # keystore format
+#    key-store-type: JKS
+#    key-store-provider: SUN
+#    key-alias: selfsigned
+
+  # TLS config
+  ssl:
+    # enable/disable https
+    enabled: true
+    # keystore location
+    key-store: classpath:tls/server/identity.jks
+    # keystore password
+    key-store-password: secret
+    # keystore format
+    key-store-type: JKS
+    key-alias: server
+    key-store-provider: SUN
+    # SSL protocol to use
+    protocol: TLS
+    # Enabled SSL protocols
+    enabled-protocols: TLSv1.2
+    # Required to implement mTLS (mutual TLS)
+#    client-auth: need
+#    trust-store: classpath:tls/server/truststore.jks
+#    trust-store-password: secret
+#    trust-store-type: JKS
+#  
+spring:
+  application:
+    name: Config-Server 
+  profiles:
+    active: default, vault, git
+  cloud:
+    config:
+      server: 
+        git:
+          order: 1
+          default-label: master # branch
+          uri: https://github.com/yahyaensi/config-repo # we can keep sensitive information encrypted in a Git repository/jdbc/redis/awss3
+          # clone-on-start: true # clone repo on config server startup
+          # timeout: 4
+        vault:
+          order: 0
+          # tell the connection host
+          host: 127.0.0.1
+          # tell the connection port
+          port: 8200
+          # tell the scheme, it could be http/https
+          scheme: https
+          # it is recommended to use kvVersion of 2
+          kvVersion: 2
+          # the backend name
+          backend: spring
+          token: 'hvs.HRZOi4w0kSHvga9f2HyFNOgg'
+          profile-separator: '/'
+        encrypt:
+          enabled: false # tells the server to not decrypt encrypted data
+    vault:
+      authentication: TOKEN
+      token: 'hvs.HRZOi4w0kSHvga9f2HyFNOgg'
+      ssl:
+        trust-store: classpath:vault/truststore.jks
+        trust-store-password: adminyahya
+          
+# Symmetric key  
+encrypt:
+  key: 7752030C95B3446094F0FA7EC766BC03 # pass this key as an environment variable for more security
+  
+#   Asymmetric key
+#   keytool -genkey -alias selfsigned -keyalg RSA -keysize 2048 -validity 700 -dname "CN=Web Server,OU=Unit,O=Organization,L=City,S=State,C=FR" -keypass adminyahya -storepass adminyahya -keystore ssl-server.jks
+# encrypt:
+#   keyStore:
+#     location: classpath:ssl-server.jks
+#     password: adminyahya
+#     alias: selfsigned
+#     secret: adminyahya  
+
+
+#logging:
+#  level:
+#    ROOT: DEBUG 
